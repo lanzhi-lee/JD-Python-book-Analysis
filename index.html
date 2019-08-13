@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Website</title>
+
+	<link rel="stylesheet" type="text/css" href="./static/css/zzsc-demo.css">
+	<style>
+		.page {
+			display: flex;
+			flex-flow: column;
+			padding: 50px;
+			padding-top: 0;
+			align-items: center;
+			color: black;
+			background-color: #f2f2f2;
+		}
+	</style>
+</head>
+
+<body>
+	<!-- 页面主体容器 -->
+	<section class="page page1">
+		<h1>作品所属出版社分析</h1>
+		<div id="page1" style="width:100%;height:1000px;background-color: white"></div>
+	</section>
+
+	<section class="page page2">
+		<h1>作者著作量分析</h1>
+		<div id="page2" style="width:100%;height:1000px;background-color: white"></div>
+	</section>
+
+	<section class="page page3">
+		<h1>图书价格分析</h1>
+		<div id="page3" style="width:100%;height:1000px;background-color: white"></div>
+	</section>
+
+	<section class="page page4">
+		<h1>价格与热度相关性分析</h1>
+		<div id="page4" style="width:100%;height:1000px;background-color: white"></div>
+	</section>
+
+	<button id="downBtn" class="button button--view" aria-label="Show me more">
+		<svg width="100%" height="100%" viewBox="0 0 310 177" preserveAspectRatio="xMidYMid meet">
+			<path fill="#FFFFFF"
+				d="M159.875,174.481L306.945,27.41c2.93-2.929,2.93-7.678,0-10.606L292.803,2.661c-1.406-1.407-3.314-2.197-5.303-2.197c-1.989,0-3.896,0.79-5.303,2.197L154.572,130.287L26.946,2.661c-1.406-1.407-3.314-2.197-5.303-2.197c-1.989,0-3.897,0.79-5.303,2.197L2.197,16.804C0.733,18.269,0,20.188,0,22.107s0.732,3.839,2.197,5.303l147.071,147.071C152.197,177.411,156.945,177.411,159.875,174.481L159.875,174.481z" />
+		</svg>
+	</button>
+</body>
+
+<!-- 翻页依赖 -->
+<script src="./static/js/jquery-2.1.1.min.js" type="text/javascript"></script>
+<script src="./static/js/naiveScroll.min.js"></script>
+
+<!-- 翻页代码 -->
+<script>
+	$(document).ready(function () {
+		$(this)._naiveScroll.init();
+
+		$('#downBtn').click(function () {
+			$(this)._naiveScroll.triggerScroll(-100);
+		});
+	});
+</script>
+
+<!-- 从后台读入数据 -->
+<script src="./data/data.js"> </script>
+
+<!-- chart依赖 -->
+<script src="https://cdn.bootcss.com/echarts/4.2.1-rc1/echarts.min.js"></script>
+
+<!-- chart设置 -->
+<!-- page1 作品所属出版社分析 -->
+<script type="text/javascript">
+	{
+		// console.log(publisherData)
+		let data = []
+		let otherCount = 0
+		for (let key in publisherData) {
+			if (publisherData[key] > 20) {
+				data.push({
+					name: key,
+					value: publisherData[key]
+				})
+			} else otherCount += publisherData[key]
+		}
+
+		data.push({
+			name: '其他',
+			value: otherCount
+		})
+
+		let myChart = echarts.init(document.getElementById('page1'));
+		let option = {
+
+			tooltip: {
+				trigger: 'item',
+				formatter: "{a} <br/>{b} : {c} ({d}%)"
+			},
+			legend: {
+				type: 'scroll',
+				orient: 'vertical',
+				right: 10,
+				top: 20,
+				bottom: 20,
+				data: data.legendData,
+
+				selected: {
+					"未知": false,
+					"其他": false
+				}
+			},
+			series: [{
+				name: '出版社',
+				type: 'pie',
+				radius: '55%',
+				center: ['40%', '50%'],
+				data,
+				itemStyle: {
+					emphasis: {
+						shadowBlur: 10,
+						shadowOffsetX: 0,
+						shadowColor: 'rgba(0, 0, 0, 0.5)'
+					}
+				}
+			}]
+		};
+		myChart.setOption(option);
+	}
+</script>
+
+<!-- page2 -->
+<script type="text/javascript">
+	{
+		let categoryData = []
+		let valueData = []
+
+		let temp = []
+		for (let key in authorData) {
+			if (key !== "作者未知") {
+				if (authorData[key] > 3) {
+					temp.push({
+						name: (key.length > 50) ? (key.substr(0, 50) + "…") : key,
+						num: authorData[key]
+					})
+				}
+			}
+		}
+
+		Array.prototype.sort.call(temp, (a, b) => a.num - b.num)
+		console.log(temp)
+
+		for (let item of temp) {
+			categoryData.push(item.name)
+			valueData.push(item.num)
+		}
+
+		let myChart = echarts.init(document.getElementById('page2'));
+		let option = {
+
+			tooltip: {
+				trigger: 'axis',
+				axisPointer: {
+					type: 'shadow'
+				}
+			},
+
+			grid: {
+				left: '3%',
+				right: '4%',
+				bottom: '3%',
+				containLabel: true
+			},
+			xAxis: {
+				type: 'value',
+				boundaryGap: [0, 0.01]
+			},
+			yAxis: {
+				type: 'category',
+				data: categoryData
+			},
+			series: [{
+				// name: '2011年',
+				type: 'bar',
+				data: valueData
+			}]
+		};
+		myChart.setOption(option);
+	}
+</script>
+
+<!-- page3 -->
+<script type="text/javascript">
+	// 基于准备好的dom，初始化echarts实例
+	{
+		// console.log(priceData)
+		let categoryData = []
+		let valueData = []
+		for (let key in priceData) {
+			// console.log(key)
+			categoryData.push(+key)
+			valueData.push(priceData[key])
+		}
+
+		// console.log(categoryData)
+		let myChart = echarts.init(document.getElementById('page3'));
+		let option = {
+			toolbox: {
+				feature: {
+					dataZoom: {
+						yAxisIndex: false
+					},
+					saveAsImage: {
+						pixelRatio: 2
+					}
+				}
+			},
+			tooltip: {
+				trigger: 'axis',
+				axisPointer: {
+					type: 'shadow'
+				}
+			},
+			grid: {
+				bottom: 90
+			},
+			dataZoom: [{
+				type: 'inside'
+			}, {
+				type: 'slider'
+			}],
+			xAxis: {
+				data: categoryData,
+				silent: false,
+				splitLine: {
+					show: false
+				},
+				splitArea: {
+					show: false
+				}
+			},
+			yAxis: {
+				splitArea: {
+					show: false
+				}
+			},
+			series: [{
+				type: 'bar',
+				data: valueData,
+				// Set `large` for large data amount
+				large: true
+			}]
+		};
+		myChart.setOption(option);
+	}
+</script>
+
+<!-- page4 价格与热度相关性分析 -->
+<script type="text/javascript">
+	{
+		let data = price_commentData
+		let myChart = echarts.init(document.getElementById('page4'));
+		let option = {
+			backgroundColor: new echarts.graphic.RadialGradient(0.3, 0.3, 0.8, [{
+				offset: 0,
+				color: '#f7f8fa'
+			}, {
+				offset: 1,
+				color: '#cdd0d5'
+			}]),
+			title: {
+				subtext: '已去除极大值与极小值'
+			},
+			xAxis: {
+				splitLine: {
+					lineStyle: {
+						type: 'dashed'
+					}
+				}
+			},
+			yAxis: {
+				splitLine: {
+					lineStyle: {
+						type: 'dashed'
+					}
+				},
+				scale: true
+			},
+			series: [{
+				data,
+				type: 'scatter',
+				symbolSize: data => Math.sqrt(data[2]) / 10,
+				label: {
+					emphasis: {
+						show: true,
+						formatter: function (param) {
+							// 这里是点的名字
+							return param.data[3];
+						},
+						position: 'top'
+					}
+				},
+				itemStyle: {
+					normal: {
+						shadowBlur: 10,
+						shadowColor: 'rgba(120, 36, 50, 0.5)',
+						shadowOffsetY: 5,
+						color: new echarts.graphic.RadialGradient(0.4, 0.3, 1, [{
+							offset: 0,
+							color: 'rgb(251, 118, 123)'
+						}, {
+							offset: 1,
+							color: 'rgb(204, 46, 72)'
+						}])
+					}
+				}
+			}]
+		};
+		myChart.setOption(option);
+	}
+</script>
+
+
+
+</html>
