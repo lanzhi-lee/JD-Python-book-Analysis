@@ -1,8 +1,11 @@
 # JD-Python-book-Analysis
 
 > 2022.03.01 注
+> 
 > 陆陆续续发现有十多个同学给我点了 star，这让我很惊喜，因为以现在的技术眼光来看，这个小 Demo 属实是很简单了
+> 
 > 为了方便查看我把可访问的地址更新了 -> [戳我](https://lanzhi-lee.github.io/JD-Python-book-Analysis/index.html)
+> 
 > 如果有其他的疑问我能帮到你，欢迎邮件联系我
 
 项目是大三下学期企业工程实践课的答辩项目，采集了京东 python 类图书的大约 1500 条数据
