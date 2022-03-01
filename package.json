@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "npx serve"
   },
   "author": "",
   "license": "MIT",
@@ -12,5 +11,8 @@
   "dependencies": {
     "koa": "^2.7.0",
     "koa-static": "^5.0.0"
+  },
+  "devDependencies": {
+    "serve": "^13.0.2"
   }
 }

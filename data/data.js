@@ -1,6 +1,7 @@
 function getSpiderData(callback) {
   $.ajax({
-    url: 'http://localhost:3000/data',
+    // url: 'http://localhost:3000/data',
+    url: './spider/JD_spider.json',
     async: false,
     success: (res) => typeof callback === 'function' && callback(res),
   })

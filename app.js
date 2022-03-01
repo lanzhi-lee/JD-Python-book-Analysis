@@ -1,3 +1,7 @@
+/**
+ * @deprecated 文件已废弃，不用再看本文件了
+ * @deprecated 接下来页面会以静态的方式直接部署在GitHub-Pages上
+ */
 const Koa = require('koa')
 const app = new Koa()
 const fs = require('fs')
